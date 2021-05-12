@@ -1,15 +1,29 @@
 import React,{useEffect,useState} from "react";
-import Form from "./form";
+
+import FormComponent from "./form";
 import Table from "./table";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,  
+  Link,
+  Redirect
+} from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css'
-import axios from "axios";
+import SigninForm from "./signin";
+import SignupForm from "./signup";
+import instance from "./api"
+import PrivateRoute from "./auth";
+
 
 function App() {
   const [data,apiData] = useState("");
   const [Edit,editData] = useState("");
+ 
+
 
   const getAll=async(e)=>{
-    let tasks = await axios.get("http://127.0.0.1:4000/tasks/tasks");
+    let tasks = await instance.get(`/tasks/tasks`);
     apiData(tasks.data);
    
    
@@ -18,13 +32,15 @@ function App() {
     const handleSubmit =async (task)=>{ 
       if(task.edit)
       {
-        const uid = task.uid;
-        let edit = await axios.patch(`http://127.0.0.1:4000/tasks/tasks/${uid}`,task);
+        const taskid = task._id;
+        console.log(taskid);
+        let edit = await instance.patch(`/tasks/tasks/${taskid}`,task);
+        console.log(edit.data);
          getAll();
       }  
       else{     
         console.log(task.edit)
-         let tasks = await axios.post("http://127.0.0.1:4000/tasks/tasks",task);
+         let tasks = await instance.post(`/tasks/tasks`,task);
          getAll();
       }
     }    
@@ -33,7 +49,7 @@ function App() {
 useEffect(()=>{
   
   getAll()
-},[])
+},[apiData])
 
 
 const update=(data)=>{
@@ -41,26 +57,95 @@ const update=(data)=>{
 }
 
 const del=async(data)=>{
-     const uid =data.uid;
-    let tasks = await axios.delete(`http://127.0.0.1:4000/tasks/tasks/${uid}`);
+     const taskid =data._id;
+    let tasks = await instance.delete(`/tasks/tasks/${taskid}`);
     console.log(tasks);
     getAll(); 
  
 }
 
+const SignIn = async (auth)=>{ 
+     
+  let tasks = await instance.post(`user/login`,auth);
+  
+  if(tasks.data){
+      localStorage.setItem('auth',JSON.stringify(tasks.data));
+     
+  } 
+   
+ 
+} 
+const SignUp = async (auth)=>{ 
+     
+  let tasks = await instance.post(`/user/signup`,auth);
+  console.log(tasks.data);    
+ 
+} 
+ 
+
 
   return (
-    <div className="container-fluid mt-5">
-      <div className="row">
-          <div className="col-sm-3">
-             <Form handleSubmit={handleSubmit} setForm={Edit}/>
-          </div>
-          <div className="col-sm-7 offset-1">
-              <Table getData={data} sinData={update} del={del}/>
-          </div>
+    <Router>
+    <div>
+      <nav className="navbar navbar-expand-lg bg-dark mb-3">
+      <ul className="navbar nav">
+          <li className="nav-item">
+          <Link className="navbar-brand text-warning" to="/">Task Manager</Link>
+          </li>
+      </ul>
+        <ul className="navbar nav ml-auto">
+         
+          <li className="nav-item">
+          <Link className="nav-link active bg-white text-dark rounded" to="/form">Form</Link>
+          </li>
+          <li className="nav-item">
+          <Link className="nav-link text-white" to="/table">Table</Link>
+          </li> 
+        </ul> 
+      </nav>   
+
+    
+      <Switch>
           
-      </div>
+      
+        <Route exact path="/login"> 
+        <div className="container">
+          <SigninForm signIn={SignIn} />
+          </div>
+        </Route>
+        <Route exact path="/signup"> 
+        <div className="container">
+          <SignupForm signup={SignUp} />
+          </div>
+        </Route>           
+        <PrivateRoute exact path="/form" component={
+          
+        <FormComponent handleSubmit={handleSubmit} setForm={Edit}/>
+        }/>
+    
+       
+        <Route exact path="/table">
+          <div className="container">
+        <Table getData={data} sinData={update} del={del}/>
+          </div>
+        </Route>
+        
+      
+      </Switch>
     </div>
+  </Router>
+
+    // <div className="container-fluid mt-5">
+    //   <div className="row">
+    //       <div className="col-sm-3">
+    //          <Form handleSubmit={handleSubmit} setForm={Edit}/>
+    //       </div>
+    //       <div className="col-sm-6 offset-1">
+    //           <Table getData={data} sinData={update} del={del}/>
+    //       </div>
+                 
+    //   </div>
+    // </div>
   );
 }
 

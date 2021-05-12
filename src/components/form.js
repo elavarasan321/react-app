@@ -1,10 +1,10 @@
 import React,{useState,useEffect} from "react";
-import 'bootstrap/dist/css/bootstrap.min.css'
 
-function Form(props) {
+
+function FormComponent(props) {
 
   const {handleSubmit} = props;  
-    const [uid,newId] = useState("");
+    const [_id,newId] = useState("");
     const [edit,isEdit] = useState(false);
     const [task,newWork] = useState("");
     const [type,newType] = useState("");
@@ -12,9 +12,9 @@ function Form(props) {
     
     useEffect(()=>{
       console.log(props.setForm);
-       if(props.setForm.uid != null)
+       if(props.setForm._id != null)
        {
-         newId(props.setForm.uid);
+         newId(props.setForm._id);
          newWork(props.setForm.task);
          newType(props.setForm.type);
          newDesc(props.setForm.describe);
@@ -27,7 +27,7 @@ function Form(props) {
     <form onSubmit={(e)=>{e.preventDefault();
     if(!edit){handleSubmit({task, type, describe,edit});newType("");newWork("");newDesc("")}
     else{
-      handleSubmit({task, type, describe,uid,edit});
+      handleSubmit({task, type, describe,_id,edit});
      
     }
     }}>
@@ -52,4 +52,4 @@ function Form(props) {
   );
 }
 
-export default Form;
+export default FormComponent;

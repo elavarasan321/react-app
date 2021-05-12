@@ -1,41 +1,47 @@
 import React from "react";
-import 'bootstrap/dist/css/bootstrap.min.css'
+
 
 function Table(props) {
    
   return (
-    <div className="">
+    <div className="row">
        {
           props.getData.length>0?
           (
-            props.getData.map(e=>              
-                <div className="each-task" key={e._id}>  
-                      <div>                                  
+            props.getData.map(e=> 
+              <div className="col-sm-3" key={e._id}>    
+              <div className="card" style={{width: "18rem"}}>        
+                <div className="" >  
+                      <div className="card-header">                                  
                         {e.task}
                         </div>
-                        <div> 
+                        <ul className="list-group list-group-flush">
+                        <li className="list-group-item"> 
                         {e.type}
-                        </div>
-                        <div> 
+                        </li>
+                        <li className="list-group-item"> 
                         {e.describe}
-                        </div>
-                        <div> 
+                        </li>
+                        <li className="list-group-item"> 
                         {e.time} 
-                       </div>
-                    <div> 
+                       </li>
+                        
+                       <li className="list-group-item">                 
                     <button id="remove" className="btn btn-info" onClick={(event)=>{
                       props.sinData(e);
                     }}
                     >Edit</button>
-                    </div> 
-                    <div> 
+                    </li > 
+                    <li className="list-group-item"> 
                     <button id="remove" className="btn btn-danger"
                     onClick={(event)=>{
                       props.del(e);
                     }}>Delete</button>
-                    </div> 
-
-                </div>          
+                    </li > 
+                    </ul> 
+                </div> 
+                </div> 
+                </div>         
             )
           ) : 
           (
