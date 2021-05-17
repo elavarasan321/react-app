@@ -49,7 +49,7 @@ function App() {
 useEffect(()=>{
   
   getAll()
-},[apiData])
+},[])
 
 
 const update=(data)=>{
